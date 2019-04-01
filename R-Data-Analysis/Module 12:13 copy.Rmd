@@ -1,0 +1,351 @@
+---
+title: "Module 12"
+author: "Dom-Romanello"
+date: "3/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(tidyverse)
+library(curl)
+library(dplyr)
+
+
+n <- 1000
+mu <- 3.5
+sigma <- 4
+v <- rnorm(n, mu, sigma)
+s <- sample(v, size = 30, replace = FALSE)
+
+v
+
+m <- mean(s)
+m
+
+sd<- sd(s)
+sd
+
+sem <- sd(s)/sqrt(length(s))
+sem
+
+lower <- m - qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+upper <- m + qnorm(1 - 0.05/2) * sem  # (1-alpha)/2 each in the upper and lower tails of the distribution
+ci <- c(lower, upper)
+ci
+
+lambda <- 14
+n <- 10
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda + 
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+
+sd <- sd(x)
+
+qqnorm(x)
+
+n <- 100
+pop_se <- sqrt(lambda/n)  # the estimated SE
+pop_se
+
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- mean(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(from = lambda - 4 * sqrt(lambda)/sqrt(n), to = lambda + 
+    4 * sqrt(lambda)/sqrt(n), length.out = 20), probability = TRUE)
+
+curve(dnorm(x, 0, 1), -4, 4, ylim = c(0, 0.8))
+z <- (x - lambda)/pop_se
+hist(z, breaks = seq(from = -4, to = 4, length.out = 20), probability = TRUE, 
+    add = TRUE)
+
+n <- 100
+x <- NULL
+for (i in 1:1000) {
+    x[i] <- sum(rpois(n = n, lambda = lambda))
+}
+hist(x, breaks = seq(min(x), max(x), length.out = 20), probability = TRUE)
+
+n <- 1000
+x <- 856
+phat <- x/n  # our estimate of pi
+phat
+
+est_pop_se <- sqrt((phat) * (1 - phat)/n)
+
+curve(dnorm(x, mean = phat, sd = est_pop_se), phat - 4 * est_pop_se, phat + 
+    4 * est_pop_se)
+upper <- phat + qnorm(0.975) * est_pop_se
+lower <- phat - qnorm(0.975) * est_pop_se
+ci <- c(lower, upper)
+polygon(cbind(c(ci[1], seq(from = ci[1], to = ci[2], length.out = 1000), ci[2]), 
+    c(0, dnorm(seq(from = ci[1], to = ci[2], length.out = 1000), mean = phat, 
+        sd = est_pop_se), 0)), border = "black", col = "gray")
+ci
+
+
+
+```
+
+Use t distribution, family of curves like normal curves but sample size is low. 
+
+```{r}
+
+mu <- 0
+sigma <- 1
+curve(dnorm(x, mu, 1), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve=red\nStudent's t=blue", 
+    xlab = "x", ylab = "f(x)", col = "red", lwd = 3)
+for (i in c(1, 2, 3, 4, 5, 10, 20, 100)) {
+    curve(dt(x, df = i), mu - 4 * sigma, mu + 4 * sigma, main = "T Curve", xlab = "x", 
+        ylab = "f(x)", add = TRUE, col = "blue", lty = 5)
+}
+
+n <- 1e+05
+mu <- 3.5
+sigma <- 4
+x <- rnorm(n, mu, sigma)
+sample_size <- 30
+s <- sample(x, size = sample_size, replace = FALSE)
+m <- mean(s)
+m
+
+lower <- m - qnorm(1 - 0.05/2) * sem  
+upper <- m + qnorm(1 - 0.05/2) * sem  
+ci_norm <- c(lower, upper)
+ci_norm
+
+lower <- m - qt(1 - 0.05/2, df = sample_size - 1 ) * sem
+upper <- m + qt(1 - 0.05/2, df = sample_size - 1) * sem
+ci_t <- c(lower, upper)
+ci_t
+
+library(curl)
+f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/vervet-weights.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+
+mean(d$weight)
+
+mu <- 4.9
+x <- d$weight
+x
+m <- mean(x)
+m
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+sem
+z <- (m - mu)/sem
+z
+
+p <- 1 - pnorm(z)
+p
+
+p <- pnorm(z, lower.tail = FALSE)
+p
+
+p <- 1 - pt(z, df = n - 1)
+p
+
+p <- pt(z, df = n - 1, lower.tail = FALSE)
+p
+
+t <- t.test(x = x, mu = mu, alternative = "greater")
+t
+
+
+lower <- m - qt(1 - 0.05/2, df = n - 1) * sem
+upper <- m + qt(1 - 0.05/2, df = n - 1) * sem
+ci <- c(lower, upper)
+ci
+
+t <- t.test(x = x, mu = mu, alternative = "two.sided")
+ci <- t$conf.int
+ci
+
+```
+
+```{r}
+library(readr)
+
+f <- "https://raw.githubusercontent.com/difiore/ADA-2019/master/woolly-weights.csv"
+d <- read_csv(f, col_names = TRUE)
+head(d)
+
+mu <- 4.9
+x <- d$weight
+x
+m <- mean(x)
+m
+s <- sd(x)
+s
+n <- length(x)
+sem <- s/sqrt(n)
+sem
+
+t <- (m-7.2)/sem
+t
+
+t <- t.test(x = x, mu = mu, alternative = "two.sided")
+ci <- t$conf.int
+ci
+
+p <- 1 - pt(abs(t), df = n - 1) + pt(-1 * abs(t), df = n - 1)
+p
+
+
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values - boundaries for 95% of the t distribution
+crit
+
+test <- (abs(t) > crit)  # boolean test as to whether t is larger than the critical value at either tail
+test
+
+t.test(x = x, mu = mu, alternative = "two.sided")
+```
+
+```{r}
+
+f <- "https://raw.githubusercontent.com/difiore/ADA-2019/master/colobus-weights.csv"
+d <- read_csv(f, col_names = TRUE)
+head(d)
+
+a <- d$weight [d$sex=="male"]
+
+b <- d$weight [d$sex="female"]
+
+boxplot(a)(x, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Males")
+boxplot(b)(x, ylim = c(4.5, 8), main = "Weight (kg)", xlab = "Females")
+
+ma <- mean(a)
+ma
+mb <- mean(b)
+mb
+sda <- sd(a)
+sda
+sdb <- sd(b)
+sdb
+na <- length(a)
+na
+nb <- length(b)
+nb
+sema <- s/sqrt(na)
+sema
+semb <- s/sqrt(nb)
+semb
+mu <- 0
+
+df <- 31.21733
+
+t <- (mb - ma - mu)/sqrt(sdb^2/nb + sda^2/na)
+t
+
+t <- -11.45952
+
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = df)  # identify critical values
+crit
+
+test <- abs(t) > crit  # boolean test
+test
+
+t <- t.test(a = a, b = b, mu = 0, alternative = "two.sided")
+g <- ma - mb + c(-1, 1) * crit * sem
+t
+
+
+f <- "https://raw.githubusercontent.com/difiore/ADA-2019/master/iqs.csv"
+d <- read_csv(f, col_names = TRUE)
+head(d)
+
+x <- d$`IQ after` - d$`IQ before`
+m <- mean(x)
+mu <- 0  # can leave this out
+s <- sd(x)
+n <- length(x)
+sem <- s/sqrt(n)
+par(mfrow = c(1, 2))
+boxplot(d$`IQ before`, ylim = c(115, 145), main = "IQ", xlab = "Before")
+boxplot(d$`IQ after`, ylim = c(115, 145), main = "IQ", xlab = "After")
+
+t <- m/sem
+t
+
+t <- (m - mu)/sem
+t
+
+alpha <- 0.05
+crit <- qt(1 - alpha/2, df = n - 1)  # identify critical values
+crit
+
+test <- abs(t) > crit  # boolean test
+test
+
+t.test(x, df = n - 1, alternative = "two.sided")
+
+pop <- c(rep(0, 500), rep(1, 500))
+
+pi <- 0.5
+x <- NULL
+n <- 10
+for (i in 1:1000) {
+    x[i] <- mean(sample(pop, size = n, replace = FALSE))  # taking the mean of a bunch of 0s and 1s yields the proportion of 1s!
+}
+m <- mean(x)
+m
+
+s <- sd(x)
+s
+
+sem <- sqrt(pi * (1 - pi)/n)
+sem 
+
+pop <- c(rep(0, 800), rep(1, 200))
+pi <- 0.8
+x <- NULL
+n <- 10
+for (i in 1:1000) {
+    x[i] <- mean(sample(pop, size = n, replace = FALSE))  # taking the mean of a bunch of 0s and 1s yields the proportion of 1s!
+}
+m <- mean(x)
+m
+
+s <- sd(x)
+s
+
+sem <- sqrt(pi * (1 - pi)/n)
+sem
+
+
+v1 <- c(1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 
+    1, 0)
+v2 <- c(1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 
+    0, 1, 1, 0, 1, 1, 1)
+
+pstar <- sum(v1) + (sum(v2)/ length(v1) + length(v2))
+  
+length(v1)
+
+phat1 <- mean(v1)
+
+phat2 <- mean(v2)
+
+z <- (phat2 - phat1) / sqrt(pstar*(1-pstar) *(1/length(v1)+1/length(v2)))
+                      
+z
+
+pt <- prop.test(x = c(sum(v2), sum(v1)), n = c(length(v2), length(v1)), alternative = "two.sided", 
+    correct = FALSE)  # use correct=FALSE if we satisfy that n*pi and n*(1-pi) are both >5
+pt
+```

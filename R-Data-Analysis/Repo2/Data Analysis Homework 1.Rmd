@@ -1,0 +1,316 @@
+---
+title: "Module 07"
+author: "Dom-Romanello"
+date: "2/7/19"
+output: html_document
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## MODULE 7
+
+m <- matrix(data = c (1,2,3,4), nrow = 2, ncol = 2)
+m
+
+
+n <- matrix(data = c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3, byrow = FALSE)
+n
+
+
+o <- matrix(data = c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3, byrow = TRUE)
+o
+
+
+v1 <- c(1, 2, 3, 4)
+v2 <- c(6, 7, 8, 9)
+m1 <- rbind(v1, v2)
+m1
+class (m1)
+dim (m1)
+str(m1)
+attributes(m1)
+
+
+m2 <- cbind(v1, v2)
+m2
+class (m2)
+dim (m2)
+str(m2)
+attributes(m2)
+
+
+a <- array(data = 1:90, dim = c(5, 6, 3))
+a
+
+
+v <- 1:100
+v
+v[1:15]
+v[c(2, 4, 6, 8, 10)]
+v <- 101:200
+v[seq(from = 1, to = 100, by = 2)]
+
+
+u <- 1:200
+u <- 101:200
+
+
+v <- c("Four", "score", "and", "seven", "years", "ago", "our", "fathers", "brought", "forth", "on", "this", "continent","a", "new", "nation", "conceived", "in", "Liberty", "and", "dedicated", "to", "the", "proposition", "that", "all", "men", "are", "created", "equal")
+v
+dim(v)
+class(v)
+v <- 1:30
+v[seq(from = 1, to = 30, by = 3)] 
+
+
+# CHALLENGE 1
+library(stringr)
+x <- c("Four score and seven years ago our fathers brought forth on this continent a new nation conceived in Liberty and dedicated to the proposition that all men are created equal")
+strsplit(x, split, fixed = FALSE, perl = FALSE, useBytes = FALSE)
+# 1 word character strings
+x_split <- c(str_split(x, " ", simplify= TRUE))
+x_split
+# every third element
+x3 <- x_split [seq(from = 1, to = 30, by = 3)]
+x3
+
+
+# CHALLENGE 2
+m <- matrix(data = 1:80, nrow = 8, ncol = 10, byrow = FALSE)
+m
+x <- m[4, 5]
+x
+x <- m[4, 5]
+x <- m[,c(2,3,6)]
+x
+x <- m[c(6,7,8), ]
+x
+x <- m[c(2:6), c(2:9)]
+x
+
+
+m[7, 1] <- 564
+m[, 8] <- 2
+m[2:5, 4:8] <- 1
+m[2:5, 4:8] <- c(20, 19, 18, 17)
+m[2:5, 4:8] <- matrix(data = c(20:1), nrow = 4, ncol = 5, byrow = TRUE)
+m[, 8] <- c("a", "b")
+m
+
+s <- c("this", "is", "a", "vector", "of", "strings")  # this is a vector of character string
+m <- matrix(data = 1:40, nrow = 5, ncol = 8)  # this is a matrix
+b <- FALSE  # this is a boolean variable
+l <- list(s, m, b)
+l
+l[[2]]
+l[[2]][2, 6]
+l[[2]][2, ]
+l[[2]][, 6]
+l[2:3]
+l[c(1, 3)]
+class(l)
+str(l)
+names(l) <- c("string", "matrix", "logical")
+names(l)
+l[[1]]
+l[["string"]]
+l[[2]][3, 5]
+l[["matrix"]][3, 5]
+
+
+# CHALLENGE 3
+s <- list("Primates
+Haplorhini
+Anthropoidea
+Platyrrhini
+Cebidae
+Atelidae
+Pitheciidae
+Catarrhini
+Cercopithecidae
+Hylobatidae
+Hominidae
+Tarsioidea
+Tarsiidae
+Strepsirhini
+Lorisoidea
+Lorisidae
+Galagidae
+Lemuroidea
+Cheirogaleidae
+Lepilemuridae
+Indriidae
+Lemuridae
+Daubentoniidae") 
+A <- list("Primates")
+B <- list("Haplorhini, Strepsirhini")
+C <- list("Anthropoidea, Tarsioidea")
+D <- list("Lorisoidea, Lemuroidea")
+E <- list("Platyrrhini, Cattarhini")
+F <- list("Cebidae, Atelidae, Pitheciidae")
+G <- list("Cercopithecidae, Hylobatidae, Hominidae")
+H <- list("Tarsiidae")
+I <- list("Lorisidae, Galagidae")
+J <- list("Cheirogaleidae, Lepilemuridae, Indriidae, Lemuridae, Daubentoniidae")
+PRIMATE <- list (A,B,C,D,E,F,G,H,I,J)
+PRIMATE
+#PRIMATE
+    + Haplorhini
+        -Anthropoidea
+            + Platyrrhini
+                -Cebidae
+                -Atelidae
+                -Pitheciidae
+            + Cattarhini
+                -Cercopithecidae
+                -Hylobatidae
+                -Hominidae
+            + Tarsioidea
+                -Tarsiidae
+        -Strepsirrhini
+            + Lorisoidea
+                -Lorisidae
+                -Galagidae
+            + Lemuroidea
+                -Cheirogalidae
+                -Lepilemuridae
+                -Indriidae
+                -Lemuridae
+                -Daubentoniidae
+
+
+# how to coerce into a dataframe, and how to pick rows/columns out of the dataframe. 
+df <- data.frame(firstName = c("Rick", "Negan", "Dwight", "Maggie", "Michonne"), 
+    community = c("Alexandria", "Saviors", "Saviors", "Hiltop", "Alexandria"), 
+    sex = c("M", "M", "M", "F", "F"), age = c(42, 40, 33, 28, 31))
+df
+
+df <- read.csv(file = "~/Desktop/R-Data-Analysis/randompeople.csv", sep = ",", header = TRUE, 
+    stringsAsFactors = FALSE)
+df
+# only print select columns of this data frame head() means we will also
+# only print the first several rows
+head(df)
+tail(df)
+head(df[, c(1, 3, 4, 11, 12)])
+tail(df[, c(1, 3, 4, 11, 12)])
+str(df)
+df[, 3]
+str(df[, 3])
+df$name.last
+str(df$name.last)
+str(df[["name.last"]])
+df[3]
+df[,4:6]
+str(df[3])
+df["name.last"]
+str(df["name.last"])
+df <- cbind(df, id = c(1:20))
+
+# How to add a column to your dataframe. 
+df <- cbind(df, school = c("UT", "UT", "A&M", "A&M", "UT", "Rice", "Texas Tech",
+    "UT", "UT", "Texas State", "A&M", "UT", "Rice", "UT", "A&M", "Texas Tech", 
+    "A&M", "UT", "Texas State", "A&M"))
+head(df)
+df$school <- c("UT", "UT", "A&M", "A&M", "UT", "Rice", "Texas Tech", "UT", "UT",
+    "Texas State", "A&M", "UT", "Rice", "UT", "A&M", "Texas Tech", "A&M", "UT", 
+    "Texas State", "A&M")
+head(df)
+df[["school"]] <- c("UT", "UT", "A&M", "A&M", "UT", "Rice", "Texas Tech", "UT", 
+    "UT", "Texas State", "A&M", "UT", "Rice", "UT", "A&M", "Texas Tech", "A&M", 
+    "UT", "Texas State", "A&M")
+head(df)
+
+# filtering rows of a dataframe
+new_df <- df[df$school == "UT", ] #return a vector equal to length of data frame                                     where school equals UT. Shows all columns                                       where school equals UT.
+new_df
+
+df$school == "UT"
+new_df <- df[df$school == "UT" & df$gender == "female", ] # all females that go                                                             to UT.
+new_df
+
+new_df <- df[df$school == "UT" & df$gender != "female", ] # all males that go                                                               to UT. != means not                                                             equal to.
+new_df
+
+new_df <- df[df$school == "UT" | df$gender == "female", ] # school is UT OR                                                                 gender is female.
+new_df
+
+#select columns of a dataframe
+new_df <- df[df$school == "UT", c("name.last", "name.first", "school")] # school                                      is UT but only pulling out these 3 columns,                                     can also use column number instead of name. 
+new_df
+
+new_df <- df[, c("name.last", "name.first", "school")]
+new_df
+
+new_df <- df[, -c(1, 2, 5:18)] # minus(-)sign says pull out all columns but...
+new_df
+
+
+# CHALLENGE 4
+m <- matrix(data = c(3, 0, 1, 23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2), nrow = 5, ncol = 3, byrow = TRUE)
+m
+df <- as.data.frame(m)
+df$v2 <- as.character(df$V2)
+df$v3 <- as.factor(df$V3)
+str(df)
+
+# Data tables and Tibbles are common Data-frame like structures, uses much simpler syntax than the traditional dataframe, yay. 
+library(data.table)
+dt <- data.table(firstName = c("Rick", "Negan", "Dwight", "Maggie", "Michonne"), 
+    community = c("Alexandria", "Saviors", "Saviors", "Hiltop", "Alexandria"), 
+    sex = c("M", "M", "M", "F", "F"), age = c(42, 40, 33, 28, 31))
+dt
+
+str(dt)
+
+df <- data.frame(firstName = c("Rick", "Negan", "Dwight", "Maggie", "Michonne"), 
+    community = c("Alexandria", "Saviors", "Saviors", "Hiltop", "Alexandria"), 
+    sex = c("M", "M", "M", "F", "F"), age = c(42, 40, 33, 28, 31))
+df
+
+str(df)
+
+dt[sex == "M"]  # filter for sex = 'M' in a data table
+
+df[df$sex == "M", ]  # filter for sex = 'M' in a data frame
+
+dt[1:2]  # return the first two rows of the data table
+
+df[1:2, ]  # return the first two rows of the data table
+
+dt[, sex]  # returns the variable 'sex'
+
+str(dt[, sex])  # sex is a CHARACTER vector
+
+df[, c("sex")]  # returns the variable 'sex'
+
+str(df[, c("sex")])  # sex is a FACTOR with 2 levels
+
+library(tibble)
+
+t <- tibble(firstName = c("Rick", "Negan", "Dwight", "Maggie", "Michonne"), 
+    community = c("Alexandria", "Saviors", "Saviors", "Hiltop", "Alexandria"), 
+    sex = c("M", "M", "M", "F", "F"), age = c(42, 40, 33, 28, 31))
+t
+
+str(t)
+
+t[, "age"]
+
+class(t[, "age"])
+
+df[, "age"]
+
+class(df[, "age"])
+
+df$a  # returns df$age
+
+t$a  # returns NULL and gives a warning
+
+t <- tibble(a = 1:4, c = 1)  # this works fine... c is recycled
+t
+
+```
+
+## R Markdown

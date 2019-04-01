@@ -1,0 +1,33 @@
+---
+title: "Module 8"
+author: "Dom-Romanello"
+date: "2/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Module 8- PULLING DATA INTO R!
+
+library(readxl)
+
+f <- "~/Desktop/R-Data-Analysis/tonyfile.xlsx"
+d <- read_excel(f, sheet=1, col_names=TRUE)
+head(d)
+str(d)
+
+
+
+
+
+
+```
+
+## R Markdown
+
+
+
+
+
+

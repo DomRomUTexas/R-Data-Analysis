@@ -1,0 +1,222 @@
+---
+title: "2/26/19 notes"
+author: "Dom-Romanello"
+date: "2/26/2019"
+output: html_document
+---
+
+for homework search help: dpois
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+discrete (e.g., bernoulli, dice) vs continuous (e.g., poisson, monkey scratch) 
+
+```{r}
+
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, ylim = c(0, max(fx) + 0.1), type = "l", xlab = "x", ylab = "f(x)", 
+    main = "Probability Density Function")
+
+```
+
+bernoulli distribution special case of binomial distribution
+
+```{r}
+n <- 6  # number of trials
+k <- 6  # exact number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n - 
+    k)
+prob
+```
+
+```{r}
+k <- 3  # exact number of successes
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n - 
+    k)
+prob
+```
+
+```{r}
+dbinom(x = k, size = n, prob = p)
+```
+```{r}
+probset <- dbinom(x = 0:6, size = 6, prob = 1/6)  # x is number of successes, size is number of trials
+barplot(probset, names.arg = 0:6, space = 0, xlab = "outcome", ylab = "Pr(X = outcome)", 
+    main = "Probability Mass Function")
+```
+
+```{r}
+n <- 10  # number of trials
+k <- 3  # exact number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n - 
+    k)
+prob
+```
+
+```{r}
+x <- 0:10
+l = 3.5
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = paste0("Probability Mass Function\nlambda = ", 
+    l))
+```
+
+
+## hw good to go on question 1! just graph it. 
+
+```{r}
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, ylim = c(0, max(fx) + 0.1), type = "l", xlab = "x", ylab = "f(x)", 
+    main = "Probability Density Function")
+```
+
+
+```{r}
+a <- 6
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, ylim = c(0, max(fx) + 0.1), type = "l", xlab = "x", ylab = "f(x)", 
+    main = "Probability Density Function")
+```
+
+```{r}
+
+V <- runif(1000,6,8)
+
+mean(V)
+
+var(V)
+
+```
+
+```{r}
+
+library(manipulate)
+
+manipulate(ggplot(data = data.frame(x = c(mu - 4 * sigma, mu + 4 * sigma)), 
+    aes(x)) + stat_function(fun = dnorm, args = list(mean = mu, sd = sigma), 
+    n = 1000) + xlab("x") + ylab("f(x)") + labs(title = "Exploring the Normal Distribution", 
+    subtitle = paste0("Cumulative Probability Under Curve = ", round(pnorm(mu + 
+        nsigma * sigma, mu, sigma) - pnorm(mu - nsigma * sigma, mu, sigma), 
+        3))) + stat_function(fun = dnorm, xlim = c(mu - nsigma * sigma, mu + 
+    nsigma * sigma), args = list(mean = mu, sd = sigma), n = 1000, geom = "area", 
+    fill = "red", alpha = 0.5, color = "red"), mu = slider(-100, 100, initial = 0, 
+    step = 10), sigma = slider(0, 30, initial = 5, step = 1), nsigma = slider(0, 
+    4, initial = 0, step = 0.25))
+
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000), 
+    pnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000), 
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 * 
+        sigma), xlab = "x", ylab = "f(x)", main = "Cumulative Probability"), 
+    mu = slider(-100, 100, initial = 0, step = 10), sigma = slider(0, 30, initial = 5, 
+        step = 1)) 
+
+p <- pnorm(8, mean = 6, sd = 2) - pnorm(7, mean = 6, sd = 2)
+p
+```
+
+```{r}
+
+
+v <- rnorm(1000,3.5,4)
+
+mean(v)
+
+var(v)
+
+sd(v)
+
+hist(v)
+
+hist(v, breaks = seq(from = -15, to = 20, by = 0.5), probability = TRUE)
+
+```
+
+
+```{r}
+
+qqnorm(v, main = "Normal QQ plot random normal variables")
+qqline(v, col = "gray")
+
+p <- ppoints(length(v))
+head(p)
+
+tail(p)
+
+theoretical_q <- qnorm(p)
+
+observed_q <- quantile(v, ppoints(v))
+
+plot(theoretical_q, observed_q, main = "QQ plot - Random Normal variable", xlab = "Theoretical Quantiles", 
+    ylab = "Sample Quantiles")
+```
+
+2/28/19 
+
+Probability mass- discrete
+
+Probability density- within a range of values
+
+standard normal distribution, mean 0, sd = 1
+
+z scores use standard normal distributions
+
+use set.seed to get the same sample every time
+
+```{r}
+
+set.seed(1)
+
+x <- rnorm (1000000, 25, 5)
+
+hist (x)
+
+mean(x)
+
+sd(x)
+
+```
+
+```{r}
+
+x
+
+y <- 5000
+
+n <- 10
+
+s <- NULL
+
+k <- 5000  # number of samples
+n <- 10  # size of each sample
+s <- NULL  # dummy variable to hold each sample
+for (i in 1:k) {
+    s[[i]] <- sample(x, size = n, replace = FALSE)
+}
+head(s)
+
+for (i in 1:k) m<- {
+mean (s[[i]])}
+
+m
+
+for (i in 1:k) n<- {
+sd (s[[i]])}
+
+n
+
+3.339711/sqrt(10)
+
+```
+

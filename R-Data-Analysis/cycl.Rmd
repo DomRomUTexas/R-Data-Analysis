@@ -1,0 +1,28 @@
+---
+title: "Cyclone"
+author: "Dom-Romanello"
+date: "2/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+CycloneYear <- read.csv("/Users/DomenicRomanello/Desktop/Disturbance Ecology/CycloneYear.csv")
+head(CycloneYear)
+
+library(lme4)
+library(lmerTest)
+
+CycloneYear$YEAR <- factor(CycloneYear$YEAR)
+
+y1 <- glmer(ALIVE.DEAD~YEAR + (1 | QUADRANT), data = CycloneYear, family = binomial)
+summary(y1)
+
+
+
+
+
+```
+
+

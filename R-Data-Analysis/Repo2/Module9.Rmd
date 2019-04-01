@@ -1,0 +1,359 @@
+---
+title: "Module 9"
+author: "Dom-Romanello"
+date: "2/11/2019"
+output: html_document
+---
+
+## Remember to use codeblocks!! So results show in rmd. '''{r} code ''' don't include text inside codeblocks.
+
+# Be sure to print() so that it shows up in html/rmd.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+
+library(tidyverse)
+library(curl)
+library(summarytools)
+library(GGally)
+library(dataMaid)
+library(psych)
+
+df <- read.csv(file = "~/Desktop/R-Data-Analysis/countrydata.csv", sep = ",", header = TRUE, 
+    stringsAsFactors = FALSE)
+df
+
+df <- read.csv(file = "~/Desktop/R-Data-Analysis/Kamilar.csv", sep = ",", header = TRUE, 
+    stringsAsFactors = FALSE)
+df
+
+f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/Country-Data-2016.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+d <- as.tibble(d)  
+
+f <- ("~/Desktop/R-Data-Analysis/countrydata.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+d <- as_tibble(d) 
+
+head(d)
+
+summary(d)
+
+names(d)
+
+d$density <- d$population/d$area
+d <- d[order(-d$density), ]
+d[1:10, ]
+
+d <- d[order(d$density), ]
+d[1:10, ]
+
+str(d)
+
+?order()
+
+s <- d[order(d$population, decreasing=TRUE), ]
+
+s <- s[1:20, ]
+
+s <- d[grep(pattern = "^[A-F]", d$country), ]
+summary(s)
+
+library(summarytools)
+
+view(dfSummary(d, style = "grid", plain.ascii = FALSE))
+
+library(dataMaid)
+
+library(summarytools)
+s <- descr(d, style = "rmarkdown", transpose = TRUE)
+
+s %>% summarytools::view()
+
+s <- dfSummary(d, style = "grid", plain.ascii = FALSE)
+s %>% summarytools::view()
+detach(package:summarytools)
+
+library(dataMaid)
+
+makeDataReport(d, output = "html", file = "~/Desktop/dataMaid-output.Rmd", replace = TRUE)
+detach(package:dataMaid)
+
+d$log_population <- log(d$population)
+d$log_area <- log(d$area)
+par(mfrow = c(1, 2))
+boxplot(d$population)
+boxplot(log(d$log_population))
+
+boxplot(d$area)
+boxplot(log(d$log_area))
+
+barplot(d$population)
+barplot(d$area)
+
+dotchart(d$population)
+dotchart(d$area) 
+
+
+d_long <- gather(d, key = variable, value = value, c("birthrate", "deathrate", 
+    "life_expect"))
+
+p <- ggplot(data = d_long, aes(x = factor(0), y = value)) + geom_boxplot(na.rm = TRUE, 
+    outlier.shape = NA) + theme(axis.title.x = element_blank(), axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank()) + geom_dotplot(binaxis = "y", stackdir = "center", 
+    stackratio = 0.2, alpha = 0.3, color = NA, fill = "red", na.rm = TRUE) + 
+    facet_grid(. ~ variable) + geom_rug(sides = "l")
+p
+
+
+p <- ggplot(data = d_long, aes(x = factor(0), y = value)) + geom_violin(na.rm = TRUE, 
+    draw_quantiles = c(0.25, 0.5, 0.75)) + theme(axis.title.x = element_blank(), 
+    axis.text.x = element_blank(), axis.ticks.x = element_blank()) + geom_dotplot(binaxis = "y", 
+    stackdir = "center", stackratio = 0.2, alpha = 0.3, color = NA, fill = "red", 
+    na.rm = TRUE) + facet_grid(. ~ variable) + geom_rug(sides = "l")
+p
+
+```
+
+# CHALLENGE 1
+
+```{r}
+par(mfrow = c(1, 2))  
+attach(d)  
+
+hist(log(population), freq = FALSE, col = "red", main = "Plot 1", xlab = "log(population size)", 
+    ylab = "density", ylim = c(0, 0.2))
+hist(log(area), freq = FALSE, col = "red", main = "Plot 2", xlab = "log(area)", 
+    ylab = "density", ylim = c(0, 0.2))
+
+hist(log(area), freq = FALSE, col = "red", main = "Plot 2", xlab = "log(area)", 
+    ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(area), na.rm = TRUE))
+
+par(mfrow = c(1, 1))  
+hist(log(population), freq = FALSE, col = "white", main = "My Plot with Mean and Density", 
+    xlab = "log(population size)", ylab = "density", ylim = c(0, 0.2))
+abline(v = mean(log(population), na.rm = TRUE), col = "blue")
+lines(density(log(population), na.rm = TRUE), col = "green")
+```
+
+# CHALLENGE 2
+
+```{r}
+t <- sort(table(d$govt_form), decreasing = TRUE)
+
+t <- group_by(d, govt_form) %>% summarize(count = n()) %>% arrange(desc(count))
+t
+
+f <- curl("https://raw.githubusercontent.com/difiore/ADA2016/master/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, stringsAsFactors = FALSE)
+d <- as.tibble(d)
+attach(d)
+head(d)
+
+summary(d)
+
+boxplot(log(Body_mass_female_mean) ~ Family, d)
+detach(d)
+
+library(ggplot2)
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))
+p <- p + geom_boxplot(na.rm = TRUE)
+p <- p + theme(axis.text.x = element_text(angle = 90))
+p <- p + ylab("log(Female Body Mass)")
+p
+
+
+attach(d)
+par(mfrow = c(1, 2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+
+detach(d)
+
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean), 
+    color = factor(Family)))  
+p <- p + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")  
+p <- p + geom_point(na.rm = TRUE) 
+p <- p + theme(legend.position = "bottom", legend.title = element_blank()) 
+p  
+
+p <- p + facet_wrap(~Family, ncol = 4)
+p <- p + theme(legend.position = "none")
+p
+
+p <- p + geom_smooth(method = "lm", fullrange = TRUE)
+p
+
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(MaxLongevity_m)))
+p <- p + geom_point()
+p <- p + geom_smooth(method = "lm")
+p
+
+aggregate(d$Body_mass_female_mean ~ d$Family, FUN = "mean", na.rm = TRUE)
+
+aggregate(x = d["Body_mass_female_mean"], by = d["Family"], FUN = "mean", na.rm = TRUE)
+
+library(dplyr)
+s <- filter(d, Family == "Hominidae" & Mass_Dimorphism > 2)
+head(s)  
+
+s <- select(d, Family, Genus, Body_mass_male_mean)  
+head(s)
+
+s <- arrange(d, Family, Genus, Body_mass_male_mean) 
+head(s)
+
+s <- rename(d, Female_Mass = Body_mass_female_mean)
+head(s$Female_Mass)  
+
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " "))
+head(s$Binomial)  
+
+s <- summarise(d, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, 
+    na.rm = TRUE))
+s
+
+byFamily <- group_by(d, Family)
+byFamily
+
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, 
+    na.rm = TRUE))
+s
+
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " ")) %>% select(Binomial, 
+    Family, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>% 
+    group_by(Family) %>% summarise(avgF = mean(Body_mass_female_mean, na.rm = TRUE), 
+    avgM = mean(Body_mass_male_mean, na.rm = TRUE), avgBMD = mean(Mass_Dimorphism, 
+        na.rm = TRUE))
+s
+
+```
+
+```{r}
+
+boxplot(log(Body_mass_female_mean) ~ Family, d)
+
+```
+
+```{r}
+
+p <- ggplot(data = d, aes(x = Family, y = log(Body_mass_female_mean)))
+p <- p + geom_boxplot(na.rm = TRUE)
+p <- p + theme(axis.text.x = element_text(angle = 90))
+p <- p + ylab("log(Female Body Mass)")
+p
+
+```
+
+```{r}
+
+attach(d)
+par(mfrow = c(1, 2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+
+p <- ggplot(data = d, aes(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean), 
+    color = factor(Family)))  # first, we build a plot object and color points by Family
+p <- p + xlab("log(Female Body Mass)") + ylab("log(Female Brain Size)")  # then we modify the axis labels
+p <- p + geom_point(na.rm = TRUE)  # then we make a scatterplot
+p <- p + theme(legend.position = "bottom", legend.title = element_blank())  # then we modify the legend
+p  # and, finally, we plot the object
+
+p <- p + facet_wrap(~Family, ncol = 4)  # wrap data 'by' family into 4 columns
+p <- p + theme(legend.position = "none")
+p
+
+attach (d)
+par(mfrow=c(1,2))
+plot(x = Body_mass_female_mean, y = Brain_Size_Female_Mean)
+plot(x = log(Body_mass_female_mean), y = log(Brain_Size_Female_Mean))
+
+``` 
+
+``` {r}
+
+p <- ggplot(data = d, aes(x=log(Body_mass_female_mean), y=log(MaxLongevity_m)))
+p <- p + geom_point(na.rm=TRUE)
+p <- p + geom_smooth(method="lm", na.rm=TRUE)
+p
+
+
+plot(x = log(Body_mass_female_mean), y = log(MaxLongevity_m))
+
+
+
+``` 
+
+
+
+```{r}
+
+s <- select(d, c(Brain_Size_Female_Mean, Body_mass_female_mean, MeanGroupSize, WeaningAge_d, HomeRange_km2, MaxLongevity_m, DayLength_km))
+
+pairs(s[, 1:ncol(s)])
+
+
+```
+
+
+```{r}
+
+library(psych)
+
+pairs.panels(s[], smooth = FALSE, lm = TRUE, ellipses = TRUE)
+
+detach(package:psych)
+
+library(GGally)
+ggpairs(s, columns = 1:ncol(s))
+detach(package:GGally)
+
+
+```
+
+dplyr
+
+```{r}
+aggregate(d$Body_mass_female_mean ~ d$Family, FUN = "mean", na.rm = TRUE)
+
+s <- filter(d, Family == "Hominidae" & Mass_Dimorphism > 2)
+head(s) 
+
+s <- select(d, Family, Genus, Body_mass_male_mean)
+head(s)
+
+s <- arrange(d, Family, Genus, Body_mass_male_mean)  
+head(s)
+
+s <- rename(d, Female_Mass = Body_mass_female_mean)
+head(s$Female_Mass) 
+
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " "))
+head(s$Binomial) 
+
+s <- summarise(d, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, 
+    na.rm = TRUE))
+s
+
+byFamily <- group_by(d, Family)
+byFamily
+
+s <- summarise(byFamily, avgF = mean(Body_mass_female_mean, na.rm = TRUE), avgM = mean(Body_mass_male_mean, 
+    na.rm = TRUE))
+s
+```
+
+##Final Challenge
+
+```{r}
+
+s <- mutate(d, Binomial = paste(Genus, Species, sep = " ")) %>% select(Binomial, Family, Body_mass_female_mean, Body_mass_male_mean, Mass_Dimorphism) %>% group_by (Family) %>% summarise(avgF = mean(Body_mass_female_mean, na.rm=2), avgM = mean(Body_mass_male_mean, na.rm=2), avgMD = mean(Mass_Dimorphism, na.rm=TRUE)) %>% arrange(desc(avgMD))
+
+s                                                                               
+```
